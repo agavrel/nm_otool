@@ -6,11 +6,12 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 22:30:41 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/03 23:45:19 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
+#include "ranlib.h"
 
 static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 					bool *is_little_endian, uint64_t *target_offset)
@@ -101,11 +102,35 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 ** archive manager: calls a t_gatherer for each object found
 */
 
-static bool		manage_archive(t_gatherer func_ptr)
+static bool		manage_ranlib(t_gatherer func_ptr)
 {
 	// TODO print smth like "\nlibft/libft.a(ft_printf_buf.o):\n"
-
 	// TODO set endian for every object in the archive
+	struct t_ranlib					*header;
+	uint64_t						target_offset;
+	uint32_t						size;
+
+	target_offset = sizeof(*header);
+	// read header
+	if (!(header = safe(0, sizeof(*header))))
+		return (errors(ERR_FILE, "missing ranlib header"));
+	//find the magic
+	if (ARCHIVE_MAGIC != header->magic)
+		return (errors(ERR_THROW, "in _manage_ranlib"));
+	size =
+	// iterate over objects while...
+	while ()
+	{
+
+	}
+		// if known magic (read magic cf above) else continue
+			// set_start_offset(magic offset); // set object start_offset
+			// endian_little_mode(object is_little_endian); // set object endian
+			// call func_ptr(is_64)
+			// set_start_offset(0); // reset start_offset
+			// endian_little_mode(base archive endian); // reset to archive's endian
+			// if !func_ptr(is_64)
+				// break;
 
 	return (errors(ERR_FILE, "you're arch"));//TODO actually manage smth
 }
