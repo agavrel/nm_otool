@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/02 23:14:06 by agrumbac         ###   ########.fr       */
+/*   Updated: 2018/05/05 23:22:37 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,7 @@
 # define OTOOL_SECTION		"__text"
 # define OTOOL_SEGMENT		"__TEXT"
 
-# define ARCHIVE_MAGIC		0x72613C21
+# define ARCHIVE_MAGIC		0xa3e686372613c21
 
 /*
 ** ------------------------------- Typedefs ------------------------------------
