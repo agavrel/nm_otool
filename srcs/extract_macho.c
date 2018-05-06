@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/06 20:18:30 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/06 21:16:25 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -130,6 +130,7 @@ static bool		manage_archive(t_gatherer func_ptr)
 	size_t							size;
 	t_archive_symtab				*symtab;
 	t_object_header					*obj;
+	uint32_t						start_offset;
 
 	endian_little_mode(BOOL_TRUE);
 	// read header
@@ -145,9 +146,25 @@ static bool		manage_archive(t_gatherer func_ptr)
 	// iterate over objects while...//
 	while (offset < header->symbol_tab_size)
 	{
-		obj = safe(*(&(symtab->obj_offset) + offset / sizeof(uint32_t)), sizeof(*obj));
+		start_offset = *(&(symtab->obj_offset) + offset / sizeof(uint32_t));
+		obj = safe(start_offset, sizeof(*obj));
 		ft_printf("%.20s\n", obj->long_name);
 		getchar();
+		// if known magic (read magic cf above) else continue
+
+			// set_start_offset(magic offset); // set object start_offset
+			set_start_offset(start_offset);
+			// endian_little_mode(object is_little_endian); // set object endian
+			endian_little_mode(BOOL_TRUE);
+			// call func_ptr(is_64)
+			func_ptr(BOOL_TRUE);
+			// set_start_offset(0); // reset start_offset
+			set_start_offset(start_offset);
+			// endian_little_mode(base archive endian); // reset to archive's endian
+			endian_little_mode(BOOL_TRUE);
+			// if !func_ptr(is_64)
+				// break;
+
 
 		//safe pointer de t_object_heaher
 		//print name
@@ -156,19 +173,13 @@ static bool		manage_archive(t_gatherer func_ptr)
 		ft_printf("obj offset %u\n", offset);
 		offset += sizeof(*symtab);
 	}
+
 	// &
 	// *
 	// (cast)
 	// malloc
 
-		// if known magic (read magic cf above) else continue
-			// set_start_offset(magic offset); // set object start_offset
-			// endian_little_mode(object is_little_endian); // set object endian
-			// call func_ptr(is_64)
-			// set_start_offset(0); // reset start_offset
-			// endian_little_mode(base archive endian); // reset to archive's endian
-			// if !func_ptr(is_64)
-				// break;
+
 
 	return (errors(ERR_FILE, "you're arch"));//TODO actually manage smth
 }
