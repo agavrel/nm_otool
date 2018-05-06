@@ -6,12 +6,12 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/06 01:04:59 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/06 20:18:30 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
-#include "ranlib.h"
+#include "archive.h"
 
 static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 					bool *is_little_endian, uint64_t *target_offset)
@@ -109,7 +109,7 @@ static uint32_t	ft_endian_4(uint32_t n)
 ** 3231303820202020 ->
 */
 
-static uint32_t	get_size(uint32_t n[2])
+static long		get_size(uint32_t n[2])
 {
 	char	size[16];
 
@@ -121,46 +121,46 @@ static uint32_t	get_size(uint32_t n[2])
 ** archive manager: calls a t_gatherer for each object found
 */
 
-static bool		manage_ranlib(t_gatherer func_ptr)
+static bool		manage_archive(t_gatherer func_ptr)
 {
 	// TODO print smth like "\nlibft/libft.a(ft_printf_buf.o):\n"
 	// TODO set endian for every object in the archive
-	t_ranlib						*header;
-	uint32_t						symbol_tab_size;
+	t_archive						*header;
+	uint32_t						offset;
 	size_t							size;
+	t_archive_symtab				*symtab;
+	t_object_header					*obj;
 
 	endian_little_mode(BOOL_TRUE);
 	// read header
 	if (!(header = safe(0, sizeof(*header))))
-		return (errors(ERR_FILE, "missing ranlib header"));
+		return (errors(ERR_FILE, "missing archive header"));
 	if (ARCHIVE_MAGIC != header->magic)
-		return (errors(ERR_THROW, "in _manage_ranlib"));
+		return (errors(ERR_THROW, "in _manage_archive"));
 
-	/*
-
-	ft_printf("header->magic %p\n", (void *) &header->magic - (void *)header);
-	ft_printf("header->name %p\n", (void *) &header->name - (void *)header);
-	ft_printf("header->timestamp %p\n", (void *) &header->timestamp - (void *)header);
-	ft_printf("header->userid %p\n", (void *) &header->userid - (void *)header);
-	ft_printf("header->groupid %p\n", (void *) &header->groupid - (void *)header);
-	ft_printf("header->mode %p\n", (void *) &header->mode - (void *)header);
-	ft_printf("header->size %p\n", (void *) &header->size - (void *)header);
-	ft_printf("header->end_header %p\n", (void *) &header->end_header - (void *)header);
-	ft_printf("header->long_name %p\n", (void *) &header->long_name - (void *)header);
-	ft_printf("header->symtab_size %p\n", (void *) &header->symtab_size - (void *)header);
-	ft_printf("---------------------------\n");*/
-	size = get_size(header->size);
-	ft_printf("size %u\n", size);
-	symbol_tab_size = header->symbol_tab_size;
-	ft_printf("header->symtabsize %u\n", symbol_tab_size);
-
-
-	// iterate over objects while...
-	while (size--)
+	//size = get_size(header->size);
+	ft_printf("header->symtabsize %u\n", header->symbol_tab_size);
+	symtab = safe(0x5c, sizeof(header->symbol_tab_size));
+	offset = 0;
+	// iterate over objects while...//
+	while (offset < header->symbol_tab_size)
 	{
-		if (!(header = safe(0, sizeof(*header))))
-			return (errors(ERR_THROW, "missing ranlib header"));
+		obj = safe(*(&(symtab->obj_offset) + offset / sizeof(uint32_t)), sizeof(*obj));
+		ft_printf("%.20s\n", obj->long_name);
+		getchar();
+
+		//safe pointer de t_object_heaher
+		//print name
+		//ft_printf("sy;bol offset %x\n", *(&(symtab->sym_offset) + offset));
+		//ft_printf("obj offset %x\n", *(&(symtab->obj_offset) + offset));
+		ft_printf("obj offset %u\n", offset);
+		offset += sizeof(*symtab);
 	}
+	// &
+	// *
+	// (cast)
+	// malloc
+
 		// if known magic (read magic cf above) else continue
 			// set_start_offset(magic offset); // set object start_offset
 			// endian_little_mode(object is_little_endian); // set object endian
@@ -194,7 +194,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//check magic
 	if (*magic == ARCHIVE_MAGIC)
-		return_value = manage_ranlib(func_ptr);
+		return_value = manage_archive(func_ptr);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return_value = func_ptr(BOOL_FALSE);
 	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)

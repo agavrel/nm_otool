@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/05 19:47:15 by angavrel         ###   ########.fr        #
+#    Updated: 2018/05/06 19:41:25 by angavrel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OTOOL_NAME = ft_otool
 
 CC = gcc
 
-# CFLAGS = -Wall -Wextra -Werror
+CFLAGS = -Wall -Wextra -Weverything#-Werror -Weverything
 
 COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c
 
@@ -34,7 +34,7 @@ LIB = -Llibft/ -lft
 
 INCLUDES = -Ilibft/includes/ -Iincludes/
 
-DEP = includes/nm_otool.h libft/libft.a
+DEP = includes/nm_otool.h includes/archive.h includes/endian.h libft/libft.a
 
 ############################## COLORS ##########################################
 
@@ -60,7 +60,7 @@ CUT = "\033[K"
 
 ############################## RULES ###########################################
 
-all: art ${NM_NAME} ${OTOOL_NAME}
+all: art ${OTOOL_NAME} #${NM_NAME}
 
 libft/%:
 	@[[ -d libft ]] || (echo ${M}Cloning"   "[libft]...${X} && git clone https://github.com/grumbach/libft &>/dev/null)
