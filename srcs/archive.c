@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:06:13 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/08 22:25:06 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 00:12:47 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,7 +21,7 @@ static uint32_t	ft_endian_4(uint32_t n)
 
 /*
 ** convert hexed ascii from header->size to its decimal value
-** 3231303820202020 ->
+** 3231303820202020 -> 2108
 */
 
 static long		get_size(uint32_t n[2])
@@ -89,7 +89,10 @@ bool			manage_archive(t_gatherer func_ptr, const char *filename)
 	t_archive						*header;
 	t_archive_symtab				*symtab_array;
 	uint32_t						i;
-	t_object_header					*obj;
+	uint32_t						offset;
+	t_object_header					*obj_header;
+	uint32_t						*magic_ptr;
+	uint32_t						magic;
 
 	static const t_loop_archive		loop_archive[2] =
 	{
@@ -100,8 +103,6 @@ bool			manage_archive(t_gatherer func_ptr, const char *filename)
 	endian_little_mode(BOOL_TRUE);
 	if (!(header = safe(0, sizeof(*header))))
 		return (errors(ERR_FILE, "missing archive header"));
-	if (ARCHIVE_MAGIC != header->magic)
-		return (errors(ERR_THROW, "in _manage_archive"));
 	if (!(symtab_array = malloc(header->symbol_tab_size)))
 		return (errors(ERR_SYS, "malloc failed"));
 	ft_memset(symtab_array, -1, header->symbol_tab_size);
@@ -110,18 +111,25 @@ bool			manage_archive(t_gatherer func_ptr, const char *filename)
 	i = 0;
 	while (i < header->symbol_tab_size / sizeof(t_archive_symtab))
 	{
-		obj = safe(symtab_array[i].obj_offset, sizeof(*obj));
-		ft_printf("%s(%.20s):\n", filename, obj->long_name);
-		ft_printf("%lx %lx\n", symtab_array[i].sym_offset, symtab_array[i].obj_offset);//
-		uint32_t myOffset = symtab_array[i].obj_offset + sizeof(*obj);
-		set_start_offset(myOffset);
-		ft_printf("%lx\n", myOffset);
-		endian_little_mode(BOOL_FALSE); //recup mach 64 header FEEFACE -> see fat
-		func_ptr(BOOL_TRUE); // -> recup magic 64 or not ?
+		offset = symtab_array[i].obj_offset;
+		if (!(obj_header = safe(offset, sizeof(*obj_header))))
+			return (errors(ERR_FILE, "bad object header offset"));
+		offset += sizeof(*obj_header);
+		ft_printf("%s(%.20s):\n", filename, obj_header->long_name);
+		//ft_printf("%lx %lx\n", symtab_array[i].sym_offset, symtab_array[i].obj_offset);//
+		//ft_printf("my offset: %lx\n", offset);//
+		if (!(magic_ptr = safe(offset, sizeof(uint32_t))))
+			return (errors(ERR_FILE, "bad magic ptr offset"));
+		magic = *magic_ptr;
+		//ft_printf("%x\n", magic);//
+		endian_little_mode(magic == MH_CIGAM_64 || magic == MH_CIGAM); //recup mach 64 header FEEFACE -> see fat
+		set_start_offset(offset);
+		func_ptr(magic == MH_MAGIC_64 || magic == MH_CIGAM_64); // -> recup magic 64 or not ?
 		set_start_offset(0);
-
+		endian_little_mode(BOOL_TRUE);
 		getchar();//
 		++i;
 	}
+	free(symtab_array);
 	return (BOOL_TRUE);
 }

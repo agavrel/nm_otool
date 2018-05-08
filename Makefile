@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/08 22:05:10 by angavrel         ###   ########.fr        #
+#    Updated: 2018/05/08 23:23:28 by angavrel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -60,7 +60,7 @@ CUT = "\033[K"
 
 ############################## RULES ###########################################
 
-all: art ${OTOOL_NAME} #${NM_NAME}
+all: art ${NM_NAME} ${OTOOL_NAME}
 
 libft/%:
 	@[[ -d libft ]] || (echo ${M}Cloning"   "[libft]...${X} && git clone https://github.com/grumbach/libft &>/dev/null)

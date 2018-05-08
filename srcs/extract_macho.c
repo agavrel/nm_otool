@@ -3,15 +3,14 @@
 /*                                                        :::      ::::::::   */
 /*   extract_macho.c                                    :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/08 22:29:36 by angavrel         ###   ########.fr       */
+/*   Created: 2018/05/08 22:33:12 by angavrel          #+#    #+#             */
+/*   Updated: 2018/05/08 23:47:12 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
-#include "archive.h"
 
 static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 					bool *is_little_endian, uint64_t *target_offset)
@@ -104,7 +103,7 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 
 bool			extract_macho(const char *filename, t_gatherer func_ptr)
 {
-	size_t		*magic;
+	uint32_t	*magic;
 	bool		return_value;
 
 	//map file

@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nm_otool.h                                         :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/22 16:41:33 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/08 22:29:33 by angavrel         ###   ########.fr       */
+/*   Created: 2018/05/08 22:45:54 by angavrel          #+#    #+#             */
+/*   Updated: 2018/05/08 23:05:31 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,9 +45,9 @@
 # define DEFAULT_TARGET		"a.out"
 
 # define OTOOL_SECTION		"__text"
-# define OTOOL_SEGMENT		"__TEXT"
+# define OTOOL_SEGMENT		NULL /*"__TEXT"*/
 
-# define ARCHIVE_MAGIC		0xa3e686372613c21
+# define ARCHIVE_MAGIC		0x72613C21
 
 /*
 ** ------------------------------- Typedefs ------------------------------------
@@ -56,7 +56,7 @@
 typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, bool*, uint64_t*);
 typedef bool	(*t_gatherer)(const bool);
 typedef bool	(*t_lc_manager)(const size_t);
-typedef bool	(*t_section_manager)(const size_t,const uint32_t);
+typedef bool	(*t_section_manager)(const size_t);
 
 typedef struct	s_safe_pointer
 {
