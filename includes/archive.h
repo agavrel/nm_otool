@@ -6,9 +6,12 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 22:41:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/06 21:11:14 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/08 22:07:49 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
+
+#ifndef ARCHIVE_H
+# define ARCHIVE_H
 
 /*
 ** size of archive header is 80 bytes
@@ -47,3 +50,10 @@ typedef struct	s_archive_symtab
 	uint32_t	sym_offset;
 	uint32_t	obj_offset;
 }				t_archive_symtab;
+
+bool			manage_archive(t_gatherer func_ptr, const char *filename);
+
+typedef bool	(*t_loop_archive)(t_gatherer func_ptr, const char *filename, \
+						t_archive *header, t_archive_symtab	*symtab_array);
+
+#endif

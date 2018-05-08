@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/29 21:37:12 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/06 21:16:25 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/08 22:29:36 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,92 +98,6 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 	return (func_ptr(BOOL_FALSE));
 }
 
-static uint32_t	ft_endian_4(uint32_t n)
-{
-	return ((n >> 24) | ((n & 0xff0000) >> 8) \
-	| ((n & 0xff00) << 8) | (n << 24));
-}
-
-/*
-** convert hexed ascii from header->size to its decimal value
-** 3231303820202020 ->
-*/
-
-static long		get_size(uint32_t n[2])
-{
-	char	size[16];
-
-	ft_memcpy(size, n, 16);
-	return (ft_atol(size));
-}
-
-/*
-** archive manager: calls a t_gatherer for each object found
-*/
-
-static bool		manage_archive(t_gatherer func_ptr)
-{
-	// TODO print smth like "\nlibft/libft.a(ft_printf_buf.o):\n"
-	// TODO set endian for every object in the archive
-	t_archive						*header;
-	uint32_t						offset;
-	size_t							size;
-	t_archive_symtab				*symtab;
-	t_object_header					*obj;
-	uint32_t						start_offset;
-
-	endian_little_mode(BOOL_TRUE);
-	// read header
-	if (!(header = safe(0, sizeof(*header))))
-		return (errors(ERR_FILE, "missing archive header"));
-	if (ARCHIVE_MAGIC != header->magic)
-		return (errors(ERR_THROW, "in _manage_archive"));
-
-	//size = get_size(header->size);
-	ft_printf("header->symtabsize %u\n", header->symbol_tab_size);
-	symtab = safe(0x5c, sizeof(header->symbol_tab_size));
-	offset = 0;
-	// iterate over objects while...//
-	while (offset < header->symbol_tab_size)
-	{
-		start_offset = *(&(symtab->obj_offset) + offset / sizeof(uint32_t));
-		obj = safe(start_offset, sizeof(*obj));
-		ft_printf("%.20s\n", obj->long_name);
-		getchar();
-		// if known magic (read magic cf above) else continue
-
-			// set_start_offset(magic offset); // set object start_offset
-			set_start_offset(start_offset);
-			// endian_little_mode(object is_little_endian); // set object endian
-			endian_little_mode(BOOL_TRUE);
-			// call func_ptr(is_64)
-			func_ptr(BOOL_TRUE);
-			// set_start_offset(0); // reset start_offset
-			set_start_offset(start_offset);
-			// endian_little_mode(base archive endian); // reset to archive's endian
-			endian_little_mode(BOOL_TRUE);
-			// if !func_ptr(is_64)
-				// break;
-
-
-		//safe pointer de t_object_heaher
-		//print name
-		//ft_printf("sy;bol offset %x\n", *(&(symtab->sym_offset) + offset));
-		//ft_printf("obj offset %x\n", *(&(symtab->obj_offset) + offset));
-		ft_printf("obj offset %u\n", offset);
-		offset += sizeof(*symtab);
-	}
-
-	// &
-	// *
-	// (cast)
-	// malloc
-
-
-
-	return (errors(ERR_FILE, "you're arch"));//TODO actually manage smth
-}
-
 /*
 ** extract_macho and call a t_gatherer
 */
@@ -205,7 +119,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//check magic
 	if (*magic == ARCHIVE_MAGIC)
-		return_value = manage_archive(func_ptr);
+		return_value = manage_archive(func_ptr, filename);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return_value = func_ptr(BOOL_FALSE);
 	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)
