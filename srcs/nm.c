@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/08 23:47:10 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 22:32:31 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -75,7 +75,7 @@ static char		get_type(const uint8_t n_type, const uint8_t n_sect)
 	else if (n_type_field == N_SECT)
 	{//TODO clean 0x8000000000000000 and make for _32
 		if (!(type = sections_character_table(0x8000000000000000L | n_sect)))
-			return (errors(ERR_THROW, "in _get_type"));
+			return (errors(ERR_THROW, "get_type"));
 	}
 	else if (n_type_field == N_PBUD)
 		type = 'u'; //TODO find correct letter for prebound undefined (def in dylib)
@@ -157,7 +157,7 @@ static bool		manage_segment_32(const size_t offset)
 {
 	if (!(iterate_sections(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "in _manage_segment"));
+		return (errors(ERR_THROW, "manage_segment"));
 	return (BOOL_TRUE);
 }
 
@@ -165,7 +165,7 @@ static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "in _manage_segment"));
+		return (errors(ERR_THROW, "manage_segment"));
 	return (BOOL_TRUE);
 }
 
@@ -191,10 +191,10 @@ static bool		nm_gatherer(const bool is_64)
 	sections_character_table(0);
 	// fill sections table
 	if (!(iterate_lc(is_64, lc_seg[is_64], segment_manager[is_64])))
-		return (errors(ERR_THROW, "in _nm_gatherer"));
+		return (errors(ERR_THROW, "nm_gatherer"));
 	// manage symtab
 	if (!(iterate_lc(is_64, LC_SYMTAB, symtab_manager[is_64])))
-		return (errors(ERR_THROW, "in _nm_gatherer"));
+		return (errors(ERR_THROW, "nm_gatherer"));
 
 	return (BOOL_TRUE);
 }

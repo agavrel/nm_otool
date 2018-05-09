@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/08 23:47:15 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 22:32:41 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static bool		manage_segment(const size_t offset)
 {
 	if (!(iterate_sections(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section)))
-		return (errors(ERR_THROW, "in _manage_segment"));
+		return (errors(ERR_THROW, "manage_segment"));
 	return (BOOL_TRUE);
 }
 
@@ -79,7 +79,7 @@ static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section_64)))
-		return (errors(ERR_THROW, "in _manage_segment_64"));
+		return (errors(ERR_THROW, "manage_segment_64"));
 	return (BOOL_TRUE);
 }
 

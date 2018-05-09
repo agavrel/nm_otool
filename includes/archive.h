@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 22:41:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/08 22:07:49 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 23:10:58 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,7 +53,7 @@ typedef struct	s_archive_symtab
 
 bool			manage_archive(t_gatherer func_ptr, const char *filename);
 
-typedef bool	(*t_loop_archive)(t_gatherer func_ptr, const char *filename, \
-						t_archive *header, t_archive_symtab	*symtab_array);
+typedef bool	(*t_loop_archive)(t_archive *header, \
+									t_archive_symtab *symtab_array);
 
 #endif

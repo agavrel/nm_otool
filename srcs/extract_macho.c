@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:33:12 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/08 23:47:12 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 22:32:07 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 	//find the magic
 	if (!find_the_magic[is_64](endian_4(header->nfat_arch), \
 		sizeof(*header), &is_little_endian, &target_offset))
-		return (errors(ERR_THROW, "in _manage_fat"));
+		return (errors(ERR_THROW, "manage_fat"));
 
 	//do the mach-o parsing magic
 	if (!target_offset)
@@ -108,7 +108,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//map file
 	if (!read_file(filename))
-		return (errors(ERR_THROW, "in _read_file"));
+		return (errors(ERR_THROW, "read_file"));
 	if (!(magic = safe(0, sizeof(uint32_t))))
 		return (errors(ERR_FILE, "missing magic"));
 
@@ -132,6 +132,6 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 
 	//unmap file
 	if (!free_file())
-		return (errors(ERR_THROW, "in _free_file"));
+		return (errors(ERR_THROW, "free_file"));
 	return (return_value);
 }

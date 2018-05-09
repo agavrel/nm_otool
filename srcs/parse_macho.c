@@ -6,7 +6,7 @@
 /*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/04/23 22:30:11 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/08 23:47:14 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/09 22:33:04 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -40,7 +40,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 	while (ncmds--)
 	{
 		if (endian_4(lc->cmd) == target && !func_ptr(offset))
-			return (errors(ERR_THROW, "in _iterate_lc"));
+			return (errors(ERR_THROW, "iterate_lc"));
 		offset += endian_4(lc->cmdsize);
 		if (!(lc = safe(offset, sizeof(*lc))))
 			return (errors(ERR_FILE, "bad load command offset"));
@@ -76,7 +76,7 @@ bool			iterate_sections(const size_t start_offset, \
 		{
 			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
 				&& !func_ptr(offset))
-				return (errors(ERR_THROW, "in _iterate_sections"));
+				return (errors(ERR_THROW, "iterate_sections"));
 			offset += sizeof(*sect);
 			if (!(sect = safe(offset, sizeof(*sect))))
 				return (errors(ERR_FILE, "bad section offset"));
@@ -106,7 +106,7 @@ bool			iterate_sections_64(const size_t start_offset, \
 		{
 			if ((!target_section || !ft_strncmp(sect->sectname, target_section, 16))
 				&& !func_ptr(offset))
-				return (errors(ERR_THROW, "in _iterate_sections_64"));
+				return (errors(ERR_THROW, "iterate_sections_64"));
 			offset += sizeof(*sect);
 			if (!(sect = safe(offset, sizeof(*sect))))
 				return (errors(ERR_FILE, "bad section offset"));
