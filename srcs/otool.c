@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   otool.c                                            :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/23 17:42:24 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/09 22:32:41 by angavrel         ###   ########.fr       */
+/*   Created: 2018/05/10 02:09:18 by angavrel          #+#    #+#             */
+/*   Updated: 2018/05/10 02:22:32 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -71,7 +71,7 @@ static bool		manage_segment(const size_t offset)
 {
 	if (!(iterate_sections(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section)))
-		return (errors(ERR_THROW, "manage_segment"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 
@@ -79,7 +79,7 @@ static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, OTOOL_SEGMENT, OTOOL_SECTION, \
 		&print_section_64)))
-		return (errors(ERR_THROW, "manage_segment_64"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 

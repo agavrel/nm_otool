@@ -6,18 +6,12 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:06:13 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/09 23:11:52 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:22:30 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 #include "archive.h"
-
-static uint32_t	ft_endian_4(uint32_t n)
-{
-	return ((n >> 24) | ((n & 0xff0000) >> 8) \
-	| ((n & 0xff00) << 8) | (n << 24));
-}
 
 /*
 ** for unsorted archive
@@ -75,26 +69,25 @@ static bool		parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 		return (errors(ERR_FILE, "bad object header offset"));
 	offset += sizeof(*obj_header);
 	ft_printf("%s(%.20s):\n", filename, obj_header->long_name);
-	//ft_printf("%lx %lx\n", symtab_array[i].sym_offset, symtab_array[i].obj_offset);//
-	//ft_printf("my offset: %lx\n", offset);//
 	if (!(magic = safe(offset, sizeof(uint32_t))))
 		return (errors(ERR_FILE, "bad magic ptr offset"));
-	endian_little_mode(*magic == MH_CIGAM_64 || *magic == MH_CIGAM); //recup mach 64 header FEEFACE -> see fat
+	endian_little_mode(*magic == MH_CIGAM_64 || *magic == MH_CIGAM);
 	set_start_offset(offset);
-	func_ptr(*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64); // -> recup magic 64 or not ?
+	func_ptr(*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64);
 	set_start_offset(0);
-	endian_little_mode(BOOL_TRUE);
+	if (!(magic = safe(0, sizeof(uint32_t))))
+		return (errors(ERR_FILE, "bad magic ptr offset"));
+	endian_little_mode(*magic == ARCHIVE_CIGAM);
 }
 
 /*
 ** archive manager: calls a t_gatherer for each object found
 */
 
-bool			manage_archive(t_gatherer func_ptr, const char *filename)
+bool			manage_archive(t_gatherer func_ptr, const char *file)
 {
-	// TODO set endian for every object in the archive
 	t_archive						*header;
-	t_archive_symtab				*symtab_array;
+	t_archive_symtab				*symtab_arr;
 	uint32_t						i;
 	static const t_loop_archive		loop_archive[2] =
 	{
@@ -102,18 +95,17 @@ bool			manage_archive(t_gatherer func_ptr, const char *filename)
 		&loop_archive_sorted
 	};
 
-	endian_little_mode(BOOL_TRUE);
 	if (!(header = safe(0, sizeof(*header))))
 		return (errors(ERR_FILE, "missing archive header"));
-	if (!(symtab_array = malloc(header->symbol_tab_size)))
+	if (!(symtab_arr = malloc(header->symbol_tab_size)))
 		return (errors(ERR_SYS, "malloc failed"));
-	ft_memset(symtab_array, -1, header->symbol_tab_size);
-	loop_archive[!ft_strcmp(header->long_name, "__.SYMDEF SORTED")](header, \
-																symtab_array);
+	ft_memset(symtab_arr, -1, header->symbol_tab_size);
+	loop_archive[!ft_strcmp(header->long_name, \
+		"__.SYMDEF SORTED")](header, symtab_arr);
 	i = 0;
 	while (i < header->symbol_tab_size / sizeof(t_archive_symtab))
-		parse_object_header(func_ptr, \
-						symtab_array[i++].obj_offset, filename);
-	free(symtab_array);
+		if (!(parse_object_header(func_ptr, symtab_arr[i++].obj_offset, file)))
+			return (errors(ERR_THROW, __func__));
+	free(symtab_arr);
 	return (BOOL_TRUE);
 }

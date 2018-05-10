@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:45:54 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/08 23:05:31 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:22:34 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -47,7 +47,8 @@
 # define OTOOL_SECTION		"__text"
 # define OTOOL_SEGMENT		NULL /*"__TEXT"*/
 
-# define ARCHIVE_MAGIC		0x72613C21
+# define ARCHIVE_CIGAM		0x72613C21
+# define ARCHIVE_MAGIC		0x213C6172
 
 /*
 ** ------------------------------- Typedefs ------------------------------------

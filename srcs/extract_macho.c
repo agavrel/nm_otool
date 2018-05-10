@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:33:12 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/09 22:32:07 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/10 02:22:31 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -87,7 +87,7 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 	//find the magic
 	if (!find_the_magic[is_64](endian_4(header->nfat_arch), \
 		sizeof(*header), &is_little_endian, &target_offset))
-		return (errors(ERR_THROW, "manage_fat"));
+		return (errors(ERR_THROW, __func__));
 
 	//do the mach-o parsing magic
 	if (!target_offset)
@@ -117,7 +117,7 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 		*magic == MH_CIGAM || *magic == MH_CIGAM_64);
 
 	//check magic
-	if (*magic == ARCHIVE_MAGIC)
+	if (*magic == ARCHIVE_CIGAM)
 		return_value = manage_archive(func_ptr, filename);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
 		return_value = func_ptr(BOOL_FALSE);

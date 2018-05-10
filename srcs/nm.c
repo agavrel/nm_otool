@@ -3,10 +3,10 @@
 /*                                                        :::      ::::::::   */
 /*   nm.c                                               :+:      :+:    :+:   */
 /*                                                    +:+ +:+         +:+     */
-/*   By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+        */
+/*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
-/*   Created: 2018/04/22 17:44:07 by agrumbac          #+#    #+#             */
-/*   Updated: 2018/05/09 22:32:31 by angavrel         ###   ########.fr       */
+/*   Created: 2018/05/10 02:02:18 by angavrel          #+#    #+#             */
+/*   Updated: 2018/05/10 02:22:32 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -53,39 +53,37 @@ static char		sections_character_table(const size_t offset)
 }
 
 /*
-** get_type character
+** get_type character : special types for N_STAB and N_PEXT, n_type_field types
+** for N_UNDF, N_ABS, N_SECT, N_PBUD, N_INDR. If external N_EXT, set uppercase
+** N_PEXT slightly differently coded compared to original behaviour
 */
 
-static char		get_type(const uint8_t n_type, const uint8_t n_sect)
+static char		get_type(const uint8_t n_type, const uint8_t n_sect, \
+							const uint64_t n_value)
 {
 	const int	n_type_field = N_TYPE & n_type;
-	char		type = ' ';// TODO check default type letter
+	char		type;
 
-	//special types
+	type = '?';
 	if (N_STAB & n_type)
 		type = '-';
 	if (N_PEXT & n_type)
-		type = 'u'; //TODO find correct letter for private external symbol bit
-
-	//n_type_field types
-	if (n_type_field == N_UNDF)
 		type = 'u';
+	if (n_type_field == N_UNDF)
+		type = n_value ? 'c' : 'u';
 	else if (n_type_field == N_ABS)
 		type = 'a';
 	else if (n_type_field == N_SECT)
 	{//TODO clean 0x8000000000000000 and make for _32
 		if (!(type = sections_character_table(0x8000000000000000L | n_sect)))
-			return (errors(ERR_THROW, "get_type"));
+			return (errors(ERR_THROW, __func__));
 	}
 	else if (n_type_field == N_PBUD)
-		type = 'u'; //TODO find correct letter for prebound undefined (def in dylib)
+		type = 'u';
 	else if (n_type_field == N_INDR)
 		type = 'i';
-
-	//if external set uppercase
 	if (N_EXT & n_type)
 		type = ft_toupper(type);
-
 	return (type);
 }
 
@@ -121,7 +119,8 @@ static bool		manage_symtab_64(const size_t offset)
 	while (i < nsyms)
 	{
 		//collect data
-		char				type = get_type(nlist[i].n_type, nlist[i].n_sect);
+		char				type = get_type(nlist[i].n_type, nlist[i].n_sect, \
+											nlist[i].n_value);
 		uint64_t			offset =  nlist[i].n_value;
 		char				*str = stringtable + nlist[i].n_un.n_strx;
 		size_t				str_max_size = sym->strsize - (size_t)(str - sym->stroff);
@@ -157,7 +156,7 @@ static bool		manage_segment_32(const size_t offset)
 {
 	if (!(iterate_sections(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "manage_segment"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 
@@ -165,7 +164,7 @@ static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, NULL, NULL, \
 		(t_section_manager)&sections_character_table)))
-		return (errors(ERR_THROW, "manage_segment"));
+		return (errors(ERR_THROW, __func__));
 	return (BOOL_TRUE);
 }
 
@@ -191,10 +190,10 @@ static bool		nm_gatherer(const bool is_64)
 	sections_character_table(0);
 	// fill sections table
 	if (!(iterate_lc(is_64, lc_seg[is_64], segment_manager[is_64])))
-		return (errors(ERR_THROW, "nm_gatherer"));
+		return (errors(ERR_THROW, __func__));
 	// manage symtab
 	if (!(iterate_lc(is_64, LC_SYMTAB, symtab_manager[is_64])))
-		return (errors(ERR_THROW, "nm_gatherer"));
+		return (errors(ERR_THROW, __func__));
 
 	return (BOOL_TRUE);
 }

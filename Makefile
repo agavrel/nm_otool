@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/08 23:23:28 by angavrel         ###   ########.fr        #
+#    Updated: 2018/05/10 02:20:03 by angavrel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -18,7 +18,7 @@ OTOOL_NAME = ft_otool
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Weverything#-Werror -Weverything
+CFLAGS = -Wall -Wextra -Weverything -fsanitize=address,undefined#-Werror -Weverything
 
 COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c archive.c
 
@@ -34,7 +34,7 @@ LIB = -Llibft/ -lft
 
 INCLUDES = -Ilibft/includes/ -Iincludes/
 
-DEP = includes/nm_otool.h includes/archive.h includes/endian.h libft/libft.a
+DEP = includes/nm_otool.h includes/archive.h libft/libft.a
 
 ############################## COLORS ##########################################
 
