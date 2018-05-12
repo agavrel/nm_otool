@@ -6,11 +6,15 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:33:12 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/10 02:22:31 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 19:28:06 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
+
+/*
+** magic is defined in <mach-o/loader.h>
+*/
 
 static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 					bool *is_little_endian, uint64_t *target_offset)
@@ -35,7 +39,7 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 			*target_offset = endian_8(arch->offset);
 		offset += endian_8(arch->size);
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
@@ -61,7 +65,7 @@ static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
 			*target_offset = endian_4(arch->offset);
 		offset += endian_4(arch->size);
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
@@ -94,7 +98,7 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 		return (errors(ERR_FILE, "no known architectures found"));
 	set_start_offset(target_offset);
 	endian_little_mode(is_little_endian);
-	return (func_ptr(BOOL_FALSE));
+	return (func_ptr(false));
 }
 
 /*
@@ -120,13 +124,13 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 	if (*magic == ARCHIVE_CIGAM)
 		return_value = manage_archive(func_ptr, filename);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
-		return_value = func_ptr(BOOL_FALSE);
+		return_value = func_ptr(false);
 	else if (*magic == MH_MAGIC_64 || *magic == MH_CIGAM_64)
-		return_value = func_ptr(BOOL_TRUE);
+		return_value = func_ptr(true);
 	else if (*magic == FAT_MAGIC || *magic == FAT_CIGAM)
-		return_value = manage_fat(func_ptr, BOOL_FALSE);
+		return_value = manage_fat(func_ptr, false);
 	else if (*magic == FAT_MAGIC_64 || *magic == FAT_CIGAM_64)
-		return_value = manage_fat(func_ptr, BOOL_TRUE);
+		return_value = manage_fat(func_ptr, true);
 	else
 		return_value = errors(ERR_FILE, "unknown file format");
 

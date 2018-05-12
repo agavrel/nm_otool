@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:45:54 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/10 02:22:34 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 17:32:41 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -32,9 +32,6 @@
 ** ------------------------------- Constants -----------------------------------
 */
 
-# define BOOL_TRUE			1
-# define BOOL_FALSE			0
-
 # define ERR_NUMBER			4
 
 # define ERR_SYS			0
@@ -49,6 +46,8 @@
 
 # define ARCHIVE_CIGAM		0x72613C21
 # define ARCHIVE_MAGIC		0x213C6172
+
+# define FIRST_BIT_ON_64	0x8000000000000000L
 
 /*
 ** ------------------------------- Typedefs ------------------------------------

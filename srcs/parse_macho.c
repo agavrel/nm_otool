@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:26 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/10 02:22:33 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 17:16:59 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -45,7 +45,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 		if (!(lc = safe(offset, sizeof(*lc))))
 			return (errors(ERR_FILE, "bad load command offset"));
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
@@ -82,7 +82,7 @@ bool			iterate_sections(const size_t start_offset, \
 				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
-	return (BOOL_TRUE);
+	return (true);
 }
 
 bool			iterate_sections_64(const size_t start_offset, \
@@ -112,5 +112,5 @@ bool			iterate_sections_64(const size_t start_offset, \
 				return (errors(ERR_FILE, "bad section offset"));
 		}
 	}
-	return (BOOL_TRUE);
+	return (true);
 }

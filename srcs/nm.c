@@ -6,86 +6,12 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:02:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/10 02:22:32 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 17:30:26 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
-
-/*
-** t_section_manager (-> polymorphs into): sections_character_table
-**   fills, reads and resets section_table
-*/
-
-static char		sections_character_table(const size_t offset)
-{
-	static char				sections_character[256];
-	static uint8_t			sections = 0;
-	char					*sectname;
-
-	//reset state for next when offset == 0
-	if (offset == 0)
-	{
-		ft_bzero(sections_character, 256);
-		sections = 0;
-	}
-	//read character assuming offsets are always smaller than 1 << 63 ;)
-	else if (offset & 0x8000000000000000L)
-	{
-		return (sections_character[offset & 0xff]);
-	}
-	//write character
-	else
-	{
-		if (!(sectname = safe(offset, 16)))
-			return (errors(ERR_FILE, "bad section name offset"));
-
-		if (!ft_strncmp(sectname, "__text", 6))
-			sections_character[++sections] = 't';
-		else if (!ft_strncmp(sectname, "__data", 6))
-			sections_character[++sections] = 'd';
-		else if (!ft_strncmp(sectname, "__bss", 5))
-			sections_character[++sections] = 'b';
-		else
-			sections_character[++sections] = 's';
-	}
-	return (BOOL_TRUE);
-}
-
-/*
-** get_type character : special types for N_STAB and N_PEXT, n_type_field types
-** for N_UNDF, N_ABS, N_SECT, N_PBUD, N_INDR. If external N_EXT, set uppercase
-** N_PEXT slightly differently coded compared to original behaviour
-*/
-
-static char		get_type(const uint8_t n_type, const uint8_t n_sect, \
-							const uint64_t n_value)
-{
-	const int	n_type_field = N_TYPE & n_type;
-	char		type;
-
-	type = '?';
-	if (N_STAB & n_type)
-		type = '-';
-	if (N_PEXT & n_type)
-		type = 'u';
-	if (n_type_field == N_UNDF)
-		type = n_value ? 'c' : 'u';
-	else if (n_type_field == N_ABS)
-		type = 'a';
-	else if (n_type_field == N_SECT)
-	{//TODO clean 0x8000000000000000 and make for _32
-		if (!(type = sections_character_table(0x8000000000000000L | n_sect)))
-			return (errors(ERR_THROW, __func__));
-	}
-	else if (n_type_field == N_PBUD)
-		type = 'u';
-	else if (n_type_field == N_INDR)
-		type = 'i';
-	if (N_EXT & n_type)
-		type = ft_toupper(type);
-	return (type);
-}
+#include "nm_display.h"
 
 /*
 ** t_lc_manager symtab_manager: manage_symtab, manage_symtab_64
@@ -93,54 +19,68 @@ static char		get_type(const uint8_t n_type, const uint8_t n_sect, \
 
 static bool		manage_symtab_32(const size_t offset)
 {
-	// same as 64
-}
-
-//TODO endian management for this
-static bool		manage_symtab_64(const size_t offset)
-{
 	struct symtab_command	*sym;
-	char					*stringtable;
-	struct nlist_64			*nlist;
+	struct nlist			*nlist;
+	t_sym_sort				sorted_symbols;
 	uint32_t				nsyms;
 	uint32_t				i;
 
 	//retrieve pointers
 	if (!(sym = safe(offset, sizeof(*sym))))
 		return (errors(ERR_FILE, "bad symtab command offset"));
-	nsyms = sym->nsyms;
-	if (!(nlist = safe(sym->symoff, sizeof(*nlist) * nsyms)))
-		return (errors(ERR_FILE, "bad symbol table offset"));
-	if (!(stringtable = safe(sym->stroff, sym->strsize-1)))//TODO - -1
+	nsyms = endian_4(sym->nsyms);
+	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
+		return (errors(ERR_FILE, "bad symbol table offset or size"));
+	// check if stringtable was invalid to begin with
+	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
+	// allocate memory for sorted_symbols
+	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
+		return (errors(ERR_THROW, __func__));
 
 	//for each symbol
 	i = 0;
 	while (i < nsyms)
 	{
-		//collect data
-		char				type = get_type(nlist[i].n_type, nlist[i].n_sect, \
-											nlist[i].n_value);
-		uint64_t			offset =  nlist[i].n_value;
-		char				*str = stringtable + nlist[i].n_un.n_strx;
-		size_t				str_max_size = sym->strsize - (size_t)(str - sym->stroff);
-
-		//check for bad string offsets
-		// if ((size_t)str < sym->stroff || (size_t)str - sym->stroff > sym->strsize)
-			// return (errors(ERR_FILE, "bad symbol string offset"));
-		//check for invalid types
-		// if (!type)
-			// return (errors(ERR_THROW, "in _manage_symtab_64"));
-
-		//TODO store values instead of printing
-		if (offset)
-			ft_printf("%016lx %c %.*s\n", offset, type, str_max_size, str);
-		else
-			ft_printf("                 %c %.*s\n", type, str_max_size, str);
+		nm_extract_values(&nlist[i], \
+			endian_4(nlist[i].n_value), sym, &sorted_symbols);
 		i++;
 	}
-	//TODO sort stored values, print and free
-	return (BOOL_TRUE);
+	nm_sort_print_free(&sorted_symbols, 8);
+	return (true);
+}
+
+static bool		manage_symtab_64(const size_t offset)
+{
+	struct symtab_command	*sym;
+	struct nlist_64			*nlist;
+	t_sym_sort				sorted_symbols;
+	uint32_t				nsyms;
+	uint32_t				i;
+
+	//retrieve pointers
+	if (!(sym = safe(offset, sizeof(*sym))))
+		return (errors(ERR_FILE, "bad symtab command offset"));
+	nsyms = endian_4(sym->nsyms);
+	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
+		return (errors(ERR_FILE, "bad symbol table offset or size"));
+	// check if stringtable was invalid to begin with
+	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
+		return (errors(ERR_FILE, "bad stringtable offset or size"));
+	// allocate memory for sorted_symbols
+	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
+		return (errors(ERR_THROW, __func__));
+
+	//for each symbol
+	i = 0;
+	while (i < nsyms)
+	{
+		nm_extract_values((struct nlist*)&nlist[i], \
+			endian_8(nlist[i].n_value), sym, &sorted_symbols);
+		i++;
+	}
+	nm_sort_print_free(&sorted_symbols, 16);
+	return (true);
 }
 
 /*
@@ -149,23 +89,23 @@ static bool		manage_symtab_64(const size_t offset)
 
 /*
 ** t_lc_manager segment_manager: manage_segment, manage_segment_64
-**   fills sections_character_table
+**   fills nm_sections_character_table
 */
 
 static bool		manage_segment_32(const size_t offset)
 {
 	if (!(iterate_sections(offset, NULL, NULL, \
-		(t_section_manager)&sections_character_table)))
+		(t_section_manager)&nm_sections_character_table)))
 		return (errors(ERR_THROW, __func__));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 static bool		manage_segment_64(const size_t offset)
 {
 	if (!(iterate_sections_64(offset, NULL, NULL, \
-		(t_section_manager)&sections_character_table)))
+		(t_section_manager)&nm_sections_character_table)))
 		return (errors(ERR_THROW, __func__));
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
@@ -187,7 +127,7 @@ static bool		nm_gatherer(const bool is_64)
 	};
 
 	// reset section table
-	sections_character_table(0);
+	nm_sections_character_table(0);
 	// fill sections table
 	if (!(iterate_lc(is_64, lc_seg[is_64], segment_manager[is_64])))
 		return (errors(ERR_THROW, __func__));
@@ -195,11 +135,14 @@ static bool		nm_gatherer(const bool is_64)
 	if (!(iterate_lc(is_64, LC_SYMTAB, symtab_manager[is_64])))
 		return (errors(ERR_THROW, __func__));
 
-	return (BOOL_TRUE);
+	return (true);
 }
 
 /*
-** Muhahahahaahahahahaha >:D-
+** Flags are toggled (on/off) for files in the order they are given:
+**   ./ft_nm -p ft_ls -r -p -a ft_otool
+** would apply -p for ft_ls, and only use -r and -a for ft_otool
+** the flags are disabled on the second use (toggled on then off)
 */
 
 int				main(int ac, char **av)
@@ -208,10 +151,17 @@ int				main(int ac, char **av)
 	{
 		extract_macho(DEFAULT_TARGET, &nm_gatherer);
 	}
-	else if (*++av)
+	while (*++av)
 	{
-		extract_macho(*av, &nm_gatherer);
-		main(ac, av);
+		if (**av == '-')
+		{
+			if (!nm_set_flag(*av))
+				return (EXIT_FAILURE);
+		}
+		else
+		{
+			extract_macho(*av, &nm_gatherer);
+		}
 	}
-	return (0);
+	return (EXIT_SUCCESS);
 }

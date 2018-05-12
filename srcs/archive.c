@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:06:13 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/10 02:22:30 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 17:22:10 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -26,11 +26,13 @@ static bool		loop_archive_unsorted(t_archive *header, \
 	offset = 0;
 	while (offset < header->symbol_tab_size)
 	{
-		symtab = safe(sizeof(t_archive) - sizeof(uint32_t) \
-						+ offset, sizeof(*symtab));
+		if (!(symtab = safe(sizeof(t_archive) - sizeof(uint32_t) \
+						+ offset, sizeof(*symtab))))
+			return (errors(ERR_FILE, "bad symtab offset"));
 		symtab_array[offset / sizeof(*symtab)] = *symtab;
 		offset += sizeof(t_archive_symtab);
 	}
+	return (true);
 }
 
 /*
@@ -47,8 +49,9 @@ static bool		loop_archive_sorted(t_archive *header, \
 	offset = 0;
 	while (offset < header->symbol_tab_size)
 	{
-		symtab = safe(sizeof(t_archive) - sizeof(uint32_t) \
-						+ offset, sizeof(*symtab));
+		if (!(symtab = safe(sizeof(t_archive) - sizeof(uint32_t) \
+						+ offset, sizeof(*symtab))))
+			return (errors(ERR_FILE, "bad symtab offset"));
 		i = 0;
 		while (symtab->sym_offset > symtab_array[i].sym_offset)
 			++i;
@@ -57,6 +60,7 @@ static bool		loop_archive_sorted(t_archive *header, \
 		symtab_array[i] = *symtab;
 		offset += sizeof(t_archive_symtab);
 	}
+	return (true);
 }
 
 static bool		parse_object_header(t_gatherer func_ptr, uint32_t offset, \
@@ -78,6 +82,7 @@ static bool		parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 	if (!(magic = safe(0, sizeof(uint32_t))))
 		return (errors(ERR_FILE, "bad magic ptr offset"));
 	endian_little_mode(*magic == ARCHIVE_CIGAM);
+	return (true);
 }
 
 /*
@@ -100,12 +105,13 @@ bool			manage_archive(t_gatherer func_ptr, const char *file)
 	if (!(symtab_arr = malloc(header->symbol_tab_size)))
 		return (errors(ERR_SYS, "malloc failed"));
 	ft_memset(symtab_arr, -1, header->symbol_tab_size);
-	loop_archive[!ft_strcmp(header->long_name, \
-		"__.SYMDEF SORTED")](header, symtab_arr);
+	if (!loop_archive[!ft_strcmp(header->long_name, \
+		"__.SYMDEF SORTED")](header, symtab_arr))
+		return (errors(ERR_THROW, __func__));
 	i = 0;
 	while (i < header->symbol_tab_size / sizeof(t_archive_symtab))
 		if (!(parse_object_header(func_ptr, symtab_arr[i++].obj_offset, file)))
 			return (errors(ERR_THROW, __func__));
 	free(symtab_arr);
-	return (BOOL_TRUE);
+	return (true);
 }
