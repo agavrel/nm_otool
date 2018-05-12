@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:16:59 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:32:30 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -34,7 +34,7 @@ static void		hexdump_text(const char *text, uint64_t offset, uint64_t size)
 ** t_section_manager
 */
 
-static bool		print_section(const size_t offset, const uint32_t section_index)
+static bool		print_section(const size_t offset)
 {
 	struct section		*sect;
 	char				*text;
@@ -48,8 +48,7 @@ static bool		print_section(const size_t offset, const uint32_t section_index)
 	return (true);
 }
 
-static bool		print_section_64(const size_t offset, \
-					const uint32_t section_index)
+static bool		print_section_64(const size_t offset)
 {
 	struct section_64	*sect;
 	char				*text;
@@ -96,7 +95,7 @@ static bool		otool_gatherer(const bool is_64)
 		&manage_segment_64
 	};
 
-	return iterate_lc(is_64, lc[is_64], manager[is_64]);
+	return (iterate_lc(is_64, lc[is_64], manager[is_64]));
 }
 
 /*

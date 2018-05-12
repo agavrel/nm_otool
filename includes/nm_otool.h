@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:45:54 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:32:41 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:31:02 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -42,10 +42,11 @@
 # define DEFAULT_TARGET		"a.out"
 
 # define OTOOL_SECTION		"__text"
-# define OTOOL_SEGMENT		NULL /*"__TEXT"*/
+# define OTOOL_SEGMENT		"__TEXT"
 
-# define ARCHIVE_CIGAM		0x72613C21
-# define ARCHIVE_MAGIC		0x213C6172
+# define ARCHIVE_MAGIC		0x72613C21
+# define ARCHIVE_CIGAM		0x213C6172
+
 
 # define FIRST_BIT_ON_64	0x8000000000000000L
 
@@ -53,7 +54,7 @@
 ** ------------------------------- Typedefs ------------------------------------
 */
 
-typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, bool*, uint64_t*);
+typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, size_t*, uint32_t*);
 typedef bool	(*t_gatherer)(const bool);
 typedef bool	(*t_lc_manager)(const size_t);
 typedef bool	(*t_section_manager)(const size_t);

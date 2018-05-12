@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:16:59 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:39:03 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -56,7 +56,8 @@ bool							read_file(const char *filename)
 		return (errors(ERR_USAGE, "fstat failed"));
 	if (buf.st_mode & S_IFDIR)
 		return (errors(ERR_USAGE, "can't parse directories"));
-	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) == MAP_FAILED)
+	if ((ptr = mmap(0, buf.st_size, PROT_READ, MAP_PRIVATE, fd, 0)) \
+			== MAP_FAILED)
 		return (errors(ERR_SYS, "mmap failed"));
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
