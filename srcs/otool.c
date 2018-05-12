@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 21:32:30 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 19:14:08 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -98,22 +98,14 @@ static bool		otool_gatherer(const bool is_64)
 	return (iterate_lc(is_64, lc[is_64], manager[is_64]));
 }
 
-/*
-** Muhahahahaahahahahaha >:D-
-*/
-
 int				main(int ac, char **av)
 {
 	if (ac < 2)
-	{
-		ft_printf("%s:\n", DEFAULT_TARGET);
 		extract_macho(DEFAULT_TARGET, &otool_gatherer);
-	}
-	else if (*++av)
+	else
 	{
-		ft_printf("%s:\n", *av);
-		extract_macho(*av, &otool_gatherer);
-		main(ac, av);
+		while (*++av)
+			extract_macho(*av, &otool_gatherer);
 	}
 	return (0);
 }

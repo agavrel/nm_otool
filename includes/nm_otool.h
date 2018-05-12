@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:45:54 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 21:31:02 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:44:41 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -46,7 +46,6 @@
 
 # define ARCHIVE_MAGIC		0x72613C21
 # define ARCHIVE_CIGAM		0x213C6172
-
 
 # define FIRST_BIT_ON_64	0x8000000000000000L
 

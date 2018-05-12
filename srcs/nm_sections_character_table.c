@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:29:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:29:36 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 00:21:18 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -66,23 +66,24 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 	const int	n_type_field = N_TYPE & n_type;
 	char		type = '?';
 
-	//special types
-	if (N_STAB & n_type)
-		type = '-';
 	if (N_PEXT & n_type)
 		type = 'u';
 	//n_type_field types
 	if (n_type_field == N_UNDF)
-		type = n_value ? 'c' : 'u';
+		type = n_value ? 'c' : 'u';//TODO correct condition
 	else if (n_type_field == N_ABS)
 		type = 'a';
 	else if (n_type_field == N_PBUD)
-		type = '-';
+		type = '-';//TODO correct condition
 	else if (n_type_field == N_INDR)
 		type = 'i';
 	else if (n_type_field == N_SECT && \
 		!(type = nm_sections_character_table(FIRST_BIT_ON_64 | n_sect)))
 		type = '?';
+
+	//special types
+	if (N_STAB & n_type)
+		type = '-';
 	//if external set uppercase
 	if (N_EXT & n_type)
 		type = ft_toupper(type);
@@ -93,7 +94,7 @@ static char	get_type(const uint8_t n_type, const uint8_t n_sect, \
 ** store symbol data
 */
 
-static const char g_nm_invalid_string[18] = "bad string offset";
+static const char g_nm_invalid_string[18] = "bad string index";
 
 void		nm_extract_values(const struct nlist *nlist, const uint64_t n_value,
 				const struct symtab_command *sym, t_sym_sort *sorted_symbols)

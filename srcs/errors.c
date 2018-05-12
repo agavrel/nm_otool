@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:08:55 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:17:55 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/12 21:54:56 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -14,16 +14,14 @@
 
 bool				errors(const int err, const char *str)
 {
-	static const char	*msg[ERR_NUMBER] =
-	{
+	static const char	*msg[ERR_NUMBER] = {
 		"Error: ",
 		"Bad usage: ",
 		"Bad file: ",
 		"  -> in _"
 	};
 
-	ft_putstr_fd(msg[err], 2);
-	ft_putendl_fd(str, 2);
+	ft_dprintf(2, "%s%s", msg[err], str);
 	if (err == ERR_USAGE)
 	{
 		ft_putendl_fd("usage: ./ft_nm [flags ...] [file ...] ", 2);

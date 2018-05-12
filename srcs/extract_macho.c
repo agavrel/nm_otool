@@ -6,10 +6,11 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 20:28:57 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 21:30:03 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 19:09:42 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
+#include "archive.h"
 #include "nm_otool.h"
 
 static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
@@ -110,31 +111,28 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 	uint32_t	magic;
 	bool		return_value;
 
-	//map file
 	if (!read_file(filename))
 		return (errors(ERR_THROW, __func__));
 	if (!(magic = *(uint32_t*)safe(0, sizeof(magic))))
 		return (errors(ERR_FILE, "missing magic"));
-
-	//detect endian
 	endian_little_mode(magic == FAT_CIGAM || magic == FAT_CIGAM_64 || \
-		magic == MH_CIGAM || magic == MH_CIGAM_64);
-
-	//check magic
-	if (magic == ARCHIVE_MAGIC)
-		return_value = 42;//TODO manage_archive(func_ptr, filename);
-	else if (magic == MH_MAGIC || magic == MH_CIGAM)
-		return_value = func_ptr(false);
-	else if (magic == MH_MAGIC_64 || magic == MH_CIGAM_64)
-		return_value = func_ptr(true);
-	else if (magic == FAT_MAGIC || magic == FAT_CIGAM)
-		return_value = manage_fat(func_ptr, false);
-	else if (magic == FAT_MAGIC_64 || magic == FAT_CIGAM_64)
-		return_value = manage_fat(func_ptr, true);
+		magic == MH_CIGAM || magic == MH_CIGAM_64 || magic == ARCHIVE_CIGAM);
+	if (magic == ARCHIVE_MAGIC || magic == ARCHIVE_CIGAM)
+		return_value = manage_archive(func_ptr, filename);
 	else
-		return_value = errors(ERR_FILE, "unknown file format");
-
-	//unmap file
+	{
+		ft_printf("%s\n", filename);
+		if (magic == MH_MAGIC || magic == MH_CIGAM)
+			return_value = func_ptr(false);
+		else if (magic == MH_MAGIC_64 || magic == MH_CIGAM_64)
+			return_value = func_ptr(true);
+		else if (magic == FAT_MAGIC || magic == FAT_CIGAM)
+			return_value = manage_fat(func_ptr, false);
+		else if (magic == FAT_MAGIC_64 || magic == FAT_CIGAM_64)
+			return_value = manage_fat(func_ptr, true);
+		else
+			return_value = errors(ERR_FILE, "unknown file format");
+	}
 	if (!free_file())
 		return (errors(ERR_THROW, __func__));
 	return (return_value);

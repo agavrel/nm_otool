@@ -6,12 +6,14 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 22:41:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 17:25:50 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 00:22:05 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ARCHIVE_H
 # define ARCHIVE_H
+
+#include "nm_otool.h"
 
 /*
 ** size of archive header is 80 bytes
@@ -20,7 +22,8 @@
 
 typedef struct	s_archive
 {
-	size_t		magic;
+	uint32_t	magic;
+	uint32_t	hack_magic;
 	char		name[16];
 	uint32_t	timestamp[3];
 	char		userid[6];
@@ -30,8 +33,8 @@ typedef struct	s_archive
 	uint32_t	end_header;
 	char		long_name[20];
 	uint32_t	symbol_tab_size;
-	uint32_t	begin;
-}				t_archive;
+	uint32_t	restricted;
+}				t_archive_header;
 
 typedef struct	s_object_header
 {
@@ -53,7 +56,7 @@ typedef struct	s_archive_symtab
 
 bool			manage_archive(t_gatherer func_ptr, const char *filename);
 
-typedef bool	(*t_loop_archive)(t_archive *header, \
+typedef bool	(*t_loop_archive)(t_archive_header *header, \
 									t_archive_symtab *symtab_array);
 
 #endif
