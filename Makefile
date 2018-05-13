@@ -6,7 +6,7 @@
 #    By: agrumbac <agrumbac@student.42.fr>          +#+  +:+       +#+         #
 #                                                 +#+#+#+#+#+   +#+            #
 #    Created: 2018/04/10 17:19:11 by agrumbac          #+#    #+#              #
-#    Updated: 2018/05/12 21:41:49 by angavrel         ###   ########.fr        #
+#    Updated: 2018/05/13 21:29:00 by angavrel         ###   ########.fr        #
 #                                                                              #
 # **************************************************************************** #
 
@@ -21,7 +21,8 @@ CC = gcc
 CFLAGS = -Wall -Wextra -Werror #-Weverything -fsanitize=address,undefined
 
 COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c archive.c \
-				nm_display.c nm_sections_character_table.c nm_sort.c
+				nm_display.c nm_sections_character_table.c nm_sort.c \
+				otool_manage_segment.c nm_management_segment.c
 
 NM_SRC = nm.c ${COMMON_SRC}
 

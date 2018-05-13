@@ -6,14 +6,14 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:28:45 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 19:44:00 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 22:04:41 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 #include "nm_display.h"
 
-static inline uint8_t	*singleton()
+static inline uint8_t	*singleton(void)
 {
 	static uint8_t		flags = 0;
 
@@ -34,10 +34,8 @@ bool					nm_set_flag(const char *av)
 		| !ft_strncmp(av, "-j", 2) * NM_FLAG_J(NM_TOGGLE)
 		| !ft_strncmp(av, "-r", 2) * NM_FLAG_R(NM_TOGGLE)
 		| !ft_strncmp(av, "-n", 2) * NM_FLAG_N(NM_TOGGLE);
-
 	if (!new_flags)
 		return (errors(ERR_USAGE, av));
-
 	flags = singleton();
 	*flags ^= new_flags;
 	return (true);
@@ -86,12 +84,10 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 	t_symbol			*curr;
 	size_t				i;
 
-	//sort
 	flags = *singleton();
 	if (!NM_FLAG_P(flags))
 		nm_selection_sort(sorted_symbols, \
 			(!!NM_FLAG_R(flags) + (!!NM_FLAG_N(flags)) * 2));
-	//print
 	i = 0;
 	while (i < sorted_symbols->nsyms_sort)
 	{
@@ -106,7 +102,6 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 				curr->str_max_size, curr->string);
 		i++;
 	}
-	//free
 	free(sorted_symbols->symbols);
 	free(sorted_symbols->symbols_sort);
 }

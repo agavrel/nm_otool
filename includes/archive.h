@@ -6,14 +6,14 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/03 22:41:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 19:27:05 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 20:52:37 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef ARCHIVE_H
 # define ARCHIVE_H
 
-#include "nm_otool.h"
+# include "nm_otool.h"
 
 /*
 ** size of archive header is 80 bytes

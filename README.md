@@ -136,12 +136,13 @@ _64 uint64_t        n_value;    /* value of this symbol (or stab offset) */
 
 |**Printed char**       |```U```|```A```|```T```|```D```|```B```|```C```|```-```|```S```|```I```|
 |-----------------------|-------|-------|-------|-------|-------|-------|-------|-------|-------|
-|**Symbol Type**|undefined|absolute|text section symbol|data section  symbol|bss section symbol|common symbol|debugger symbols|symbol in another section|indirect symbol|
+|**Symbol Type**|undefined|absolute|text section symbol|data section  symbol|bss section symbol|common symbol|debugger symbols|symbol in another section|indirect symbol|Weak reference|
 
 * Symbol Section obtained by checking the ```nlist.n_sect``` section's ```section.sectname``` (see section picture above)
 * Additional Symbol Type info are in ```nlist.n_type```
-    * If the symbol is local (non-external == ```N_EXT``` bit on), the symbol's type is instead represented by  the  corresponding lowercase  letter
+    * If the symbol is local (non-external == ```N_EXT``` bit off), the symbol's type is instead represented by  the  corresponding lowercase  letter
     * A lower case u in a dynamic shared library indicates a undefined reference to a private external in another module in the same library
+	* Weak references have ```nlist.n_desc & N_WEAK_REF```
 
 ```c
 /*
@@ -161,3 +162,5 @@ _64 uint64_t        n_value;    /* value of this symbol (or stab offset) */
 #define N_PBUD  0xc             /* prebound undefined (defined in a dylib) */
 #define N_INDR  0xa             /* indirect */
 ```
+
+credit: github.com/grumbach

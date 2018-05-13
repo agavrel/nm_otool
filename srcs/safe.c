@@ -6,13 +6,13 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:33 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/12 21:39:03 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:12:23 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 
-static inline t_safe_pointer	*singleton()
+static inline t_safe_pointer	*singleton(void)
 {
 	static t_safe_pointer		safe = {NULL, 0, 0};
 
@@ -30,8 +30,7 @@ void							*safe(const uint64_t offset, const size_t size)
 	t_safe_pointer				*safe;
 
 	safe = singleton();
-	return ((void *) \
-		((size_t)(safe->ptr + safe->start_offset + offset) * \
+	return ((void *)((size_t)(safe->ptr + safe->start_offset + offset) * \
 		(safe->start_offset + offset + size < safe->filesize)));
 }
 
@@ -61,7 +60,6 @@ bool							read_file(const char *filename)
 		return (errors(ERR_SYS, "mmap failed"));
 	if (close(fd))
 		return (errors(ERR_SYS, "close failed"));
-
 	safe = singleton();
 	safe->ptr = ptr;
 	safe->filesize = buf.st_size;

@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:26 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 00:20:05 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/05/13 21:12:42 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -21,8 +21,7 @@
 bool			iterate_lc(const bool is_64, const uint32_t target, \
 					t_lc_manager func_ptr)
 {
-	static const size_t		mach_size[2] =
-	{
+	static const size_t		mach_size[2] = {
 		sizeof(struct mach_header),
 		sizeof(struct mach_header_64)
 	};
@@ -35,7 +34,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 	if (!(macho = safe(0, sizeof(*macho))))
 		return (errors(ERR_FILE, "bad macho header offset"));
 	if (!(lc = safe(offset, sizeof(*lc))))
-		return (errors(ERR_FILE, "bad load command offset"));
+		return (errors(ERR_FILE, "bad load command offset 1"));
 	ncmds = endian_4(macho->ncmds);
 	while (ncmds--)
 	{
@@ -43,7 +42,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 			return (errors(ERR_THROW, __func__));
 		offset += endian_4(lc->cmdsize);
 		if (!(lc = safe(offset, sizeof(*lc))))
-			return (errors(ERR_FILE, "bad load command offset"));
+			return (errors(ERR_FILE, "bad load command offset 2"));
 	}
 	return (true);
 }
