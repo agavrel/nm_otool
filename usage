@@ -1,0 +1,3 @@
+make && ./ft_nm objs/nm.o > test1 && nm objs/nm.o >test2 && diff test1 test2
+# make && ./ft_otool objs/nm.o > test1 && otool -t objs/nm.o >test2 && diff test1 test2
+# head -c 20 test1

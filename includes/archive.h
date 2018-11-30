@@ -15,10 +15,8 @@
 
 # include "nm_otool.h"
 
-/*
-** size of archive header is 80 bytes
-** little endian applies to size_t and uint32_t
-*/
+# define ARCHIVE_CIGAM		0x72613C21
+# define ARCHIVE_MAGIC		0x213C6172
 
 typedef struct	s_archive
 {

@@ -13,16 +13,10 @@
 #include "nm_otool.h"
 #include "nm_display.h"
 
-static inline uint8_t	*singleton(void)
-{
-	static uint8_t		flags = 0;
-
-	return (&flags);
-}
+static uint8_t			flags = 0;
 
 bool					nm_set_flag(const char *av)
 {
-	static uint8_t		*flags;
 	uint8_t				new_flags;
 
 	new_flags = 0;
@@ -34,10 +28,11 @@ bool					nm_set_flag(const char *av)
 		| !ft_strncmp(av, "-j", 2) * NM_FLAG_J(NM_TOGGLE)
 		| !ft_strncmp(av, "-r", 2) * NM_FLAG_R(NM_TOGGLE)
 		| !ft_strncmp(av, "-n", 2) * NM_FLAG_N(NM_TOGGLE);
+
 	if (!new_flags)
 		return (errors(ERR_USAGE, av));
-	flags = singleton();
-	*flags ^= new_flags;
+
+	flags ^= new_flags;
 	return (true);
 }
 
@@ -60,9 +55,6 @@ bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
 void					nm_store_value(t_sym_sort *sorted_symbols, \
 							const t_symbol *new_symbol)
 {
-	uint8_t				flags;
-
-	flags = *singleton();
 	if ((NM_FLAG_A(flags) || new_symbol->type != '-') && \
 		!(NM_FLAG_G(flags) && !ft_isupper(new_symbol->type)) && \
 		!(NM_FLAG_U(flags) && \
@@ -80,21 +72,21 @@ void					nm_store_value(t_sym_sort *sorted_symbols, \
 void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 							const int padding)
 {
-	uint8_t				flags;
 	t_symbol			*curr;
 	size_t				i;
 
-	flags = *singleton();
+	//sort
 	if (!NM_FLAG_P(flags))
 		nm_selection_sort(sorted_symbols, \
 			(!!NM_FLAG_R(flags) + (!!NM_FLAG_N(flags)) * 2));
+	//print
 	i = 0;
 	while (i < sorted_symbols->nsyms_sort)
 	{
 		curr = sorted_symbols->symbols_sort[i];
 		if (NM_FLAG_J(flags) || NM_FLAG_U(flags))
 			ft_printf("%s\n", curr->string);
-		else if (curr->offset)
+		else if (curr->offset || !(curr->type == 'u' || curr->type == 'U'))
 			ft_printf("%0*lx %c %.*s\n", padding, curr->offset, curr->type, \
 				curr->str_max_size, curr->string);
 		else
@@ -102,6 +94,7 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 				curr->str_max_size, curr->string);
 		i++;
 	}
+	//free
 	free(sorted_symbols->symbols);
 	free(sorted_symbols->symbols_sort);
 }

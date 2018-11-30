@@ -18,13 +18,11 @@ OTOOL_NAME = ft_otool
 
 CC = gcc
 
-CFLAGS = -Wall -Wextra -Werror #-Weverything -fsanitize=address,undefined
+CFLAGS = -Wall -Wextra -Werror -fsanitize=address,undefined
 
-COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c archive.c \
-				nm_display.c nm_sections_character_table.c nm_sort.c \
-				otool_manage_segment.c nm_management_segment.c
+COMMON_SRC = errors.c safe.c extract_macho.c parse_macho.c endian.c archive.c
 
-NM_SRC = nm.c ${COMMON_SRC}
+NM_SRC = nm.c nm_display.c nm_sections_character_table.c nm_sort.c ${COMMON_SRC}
 
 OTOOL_SRC = otool.c ${COMMON_SRC}
 
@@ -34,9 +32,9 @@ OBJDIR = objs
 
 LIB = -Llibft/ -lft
 
-INCLUDES = -Ilibft/incl/ -Iincludes/
+INCLUDES = -Ilibft/includes/ -Iincludes/
 
-DEP = includes/nm_otool.h includes/archive.h libft/libft.a
+DEP = includes/nm_otool.h libft/libft.a
 
 ############################## COLORS ##########################################
 
@@ -116,9 +114,9 @@ fclean: clean
 	@/bin/rm -Rf ${OTOOL_NAME}.dSYM
 
 test: libft/libft.a
-	@${CC} -g ${INCLUDES} -fsanitize=address ${LIB} \
+	@${CC} -g ${INCLUDES} -fsanitize=address,undefined ${LIB} \
 	-I. -o ${NM_NAME} $(addprefix srcs/, ${NM_SRC})
-	@${CC} -g ${INCLUDES} -fsanitize=address ${LIB} \
+	@${CC} -g ${INCLUDES} -fsanitize=address,undefined ${LIB} \
 	-I. -o ${OTOOL_NAME} $(addprefix srcs/, ${OTOOL_SRC})
 
 odiff: ft_otool
@@ -131,6 +129,8 @@ ndiff: ft_nm
 	@nm ft_nm > /tmp/ft_nmotool_daff
 	@diff /tmp/ft_nmotool_diff /tmp/ft_nmotool_daff
 
+diff: odiff ndiff
+
 re: fclean all
 
 build: libft ${NM_OBJ} ${OTOOL_OBJ}
@@ -138,13 +138,6 @@ build: libft ${NM_OBJ} ${OTOOL_OBJ}
 ############################## DECORATION ######################################
 
 art:
-	@echo ${BB}
-	@echo "           __d"
-	@echo "        _(___)"
-	@echo "     _(______)"
-	@echo "    (_______)"
-	@echo ${BB}" ..."${BR}"/( "${WR}"00"${X}${BR}"  )\\ "${BB}"....."
-	@echo ${BB}"...."${BR}"\\\\\\     //"${BB}"......."
-	@echo ${X}
-
+	@echo "(oO)"
+	
 .PHONY: all clean fclean re art

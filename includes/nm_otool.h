@@ -26,26 +26,23 @@
 # include <stdlib.h>
 # include <stdbool.h>
 
-# include "libft.h"
+# include "../libft/incl/libft.h"
 
 /*
 ** ------------------------------- Constants -----------------------------------
 */
 
-# define ERR_NUMBER			4
-
-# define ERR_SYS			0
-# define ERR_USAGE			1
-# define ERR_FILE			2
-# define ERR_THROW			3
-
-# define DEFAULT_TARGET		"a.out"
+typedef	enum
+{
+	ERR_SYS,
+	ERR_USAGE,
+	ERR_FILE,
+	ERR_THROW,
+	ERR_NUMBER
+}	t_error_type;
 
 # define OTOOL_SECTION		"__text"
 # define OTOOL_SEGMENT		"__TEXT"
-
-# define ARCHIVE_MAGIC		0x72613C21
-# define ARCHIVE_CIGAM		0x213C6172
 
 # define FIRST_BIT_ON_64	0x8000000000000000L
 
@@ -53,11 +50,10 @@
 ** ------------------------------- Typedefs ------------------------------------
 */
 
-typedef bool	(*t_fat_magic_retriever)(uint32_t nfat_arch, size_t size, \
-					size_t *target_offset, uint32_t *magic);
-typedef bool	(*t_gatherer)(const bool is_64);
-typedef bool	(*t_lc_manager)(const size_t offset);
-typedef bool	(*t_section_manager)(const size_t offset);
+typedef bool	(*t_fat_magic_retriever)(uint32_t, size_t, size_t*, uint32_t*);
+typedef bool	(*t_gatherer)(const bool);
+typedef bool	(*t_lc_manager)(const size_t);
+typedef bool	(*t_section_manager)(const size_t);
 
 typedef struct	s_safe_pointer
 {
@@ -84,8 +80,9 @@ bool			free_file(void);
 */
 
 void			endian_little_mode(bool is_little_endian);
-uint32_t		endian_4(uint32_t a);
-uint64_t		endian_8(uint64_t a);
+uint16_t		endian_2(uint16_t n);
+uint32_t		endian_4(uint32_t n);
+uint64_t		endian_8(uint64_t n);
 
 /*
 ** General functions
@@ -93,18 +90,6 @@ uint64_t		endian_8(uint64_t a);
 
 bool			extract_macho(const char *filename, t_gatherer func);
 bool			errors(const int err, const char *str);
-
-/*
-** manage segments
-*/
-
-bool			manage_segment(const size_t offset);
-bool			manage_segment_64(const size_t offset);
-bool			nm_manage_segment_32(const size_t offset);
-bool			nm_manage_segment_64(const size_t offset);
-bool			nm_manage_symtab_32(const size_t offset);
-bool			nm_manage_symtab_64(const size_t offset);
-
 
 /*
 ** Mach-O iterator functions

@@ -32,16 +32,16 @@
 **   flags ^= NM_FLAG_P(NM_TOGGLE);
 */
 
-# define NM_FLAG_A(x)	(x & 0b1)
-# define NM_FLAG_G(x)	(x & 0b10)
-# define NM_FLAG_P(x)	(x & 0b100)
-# define NM_FLAG_U(x)	(x & 0b1000)
-# define NM_FLAG_UU(x)	(x & 0b10000)
-# define NM_FLAG_J(x)	(x & 0b100000)
-# define NM_FLAG_R(x)	(x & 0b1000000)
-# define NM_FLAG_N(x)	(x & 0b10000000)
+#define NM_FLAG_A(x)		(x & 0b1)
+#define NM_FLAG_G(x)		(x & 0b10)
+#define NM_FLAG_P(x)		(x & 0b100)
+#define NM_FLAG_U(x)		(x & 0b1000)
+#define NM_FLAG_UU(x)		(x & 0b10000)
+#define NM_FLAG_J(x)		(x & 0b100000)
+#define NM_FLAG_R(x)		(x & 0b1000000)
+#define NM_FLAG_N(x)		(x & 0b10000000)
 
-# define NM_TOGGLE		0b11111111
+#define NM_TOGGLE			0b11111111
 
 /*
 ** struct s_symbol:
@@ -57,7 +57,6 @@ typedef struct	s_symbol
 	char		*string;
 	uint32_t	str_max_size;
 	char		type;
-	char		padding[3];
 }				t_symbol;
 
 /*
@@ -82,13 +81,10 @@ typedef struct	s_sym_sort
 **   nm_sort_print_free: sorts according to flags, prints and frees
 */
 
-bool			nm_set_flag(const char *av);
-bool			nm_symbol_allocate(t_sym_sort *sorted_symbols, \
-					const uint64_t nsyms);
-void			nm_store_value(t_sym_sort *sorted_symbols, \
-					const t_symbol *new_symbol);
-void			nm_sort_print_free(t_sym_sort *sorted_symbols, \
-					const int padding);
+bool		nm_set_flag(const char *av);
+bool		nm_symbol_allocate(t_sym_sort *sorted_symbols, const uint64_t nsyms);
+void		nm_store_value(t_sym_sort *sorted_symbols, const t_symbol *new_symbol);
+void		nm_sort_print_free(t_sym_sort *sorted_symbols, const int padding);
 
 /*
 ** in nm_sort.c
@@ -99,8 +95,8 @@ void			nm_sort_print_free(t_sym_sort *sorted_symbols, \
 **   (3) reverse_numerically: -n -r
 */
 
-void			nm_selection_sort(t_sym_sort *sorted_symbols, \
-					uint8_t sort_type);
+
+void		nm_selection_sort(t_sym_sort *sorted_symbols, uint8_t sort_type);
 
 /*
 ** in nm_sections_character_table.c:
@@ -108,9 +104,8 @@ void			nm_selection_sort(t_sym_sort *sorted_symbols, \
 **   nm_extract_values: stores values before sorting
 */
 
-char			nm_sections_character_table(const size_t offset);
-void			nm_extract_values(const struct nlist *nlist,\
-					const uint64_t n_value, const struct symtab_command *sym, \
-					t_sym_sort *sorted_symbols);
+char		nm_sections_character_table(const size_t offset);
+void		nm_extract_values(const struct nlist *nlist, const uint64_t n_value,
+				const struct symtab_command *sym, t_sym_sort *sorted_symbols);
 
 #endif

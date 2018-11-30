@@ -21,7 +21,8 @@
 bool			iterate_lc(const bool is_64, const uint32_t target, \
 					t_lc_manager func_ptr)
 {
-	static const size_t		mach_size[2] = {
+	static const size_t		mach_size[2] =
+	{
 		sizeof(struct mach_header),
 		sizeof(struct mach_header_64)
 	};
@@ -34,7 +35,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 	if (!(macho = safe(0, sizeof(*macho))))
 		return (errors(ERR_FILE, "bad macho header offset"));
 	if (!(lc = safe(offset, sizeof(*lc))))
-		return (errors(ERR_FILE, "bad load command offset 1"));
+		return (errors(ERR_FILE, "bad load command offset"));
 	ncmds = endian_4(macho->ncmds);
 	while (ncmds--)
 	{
@@ -42,7 +43,7 @@ bool			iterate_lc(const bool is_64, const uint32_t target, \
 			return (errors(ERR_THROW, __func__));
 		offset += endian_4(lc->cmdsize);
 		if (!(lc = safe(offset, sizeof(*lc))))
-			return (errors(ERR_FILE, "bad load command offset 2"));
+			return (errors(ERR_FILE, "bad load command offset"));
 	}
 	return (true);
 }
