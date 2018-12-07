@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 20:28:57 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 22:52:23 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 23:12:31 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -18,16 +18,12 @@ static bool		known_magic_retriever_64(uint32_t nfat_arch, size_t offset, \
 	struct fat_arch_64		*arch;
 	uint32_t				*magic_ptr;
 
-	// loop through architectures looking for known magic
 	while (nfat_arch--)
 	{
-		//retrieve safe pointers
 		if (!(arch = safe(offset, sizeof(*arch))))
 			return (errors(ERR_FILE, "bad fat arch offset"));
 		if (!(magic_ptr = safe(endian_8(arch->offset), sizeof(*magic_ptr))))
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
-
-		// check for known magic
 		if (*magic_ptr == MH_CIGAM_64 || *magic_ptr == MH_MAGIC_64)
 			*target_offset = endian_8(arch->offset);
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
@@ -46,16 +42,12 @@ static bool		known_magic_retriever_32(uint32_t nfat_arch, size_t offset, \
 	struct fat_arch			*arch;
 	uint32_t				*magic_ptr;
 
-	// loop through architectures looking for known magic
 	while (nfat_arch--)
 	{
-		//retrieve safe pointers
 		if (!(arch = safe(offset, sizeof(*arch))))
 			return (errors(ERR_FILE, "bad fat arch offset"));
 		if (!(magic_ptr = safe(endian_4(arch->offset), sizeof(*magic_ptr))))
 			return (errors(ERR_FILE, "bad fat arch magic offset"));
-
-		// check for known magic
 		if (*magic_ptr == MH_CIGAM_64 || *magic_ptr == MH_MAGIC_64)
 			*target_offset = endian_4(arch->offset);
 		else if (!(*target_offset) && (*magic_ptr == MH_CIGAM || \
@@ -83,17 +75,12 @@ static bool		manage_fat(t_gatherer func_ptr, const bool is_64)
 	size_t								target_offset;
 	uint32_t							magic;
 
-	//read header
 	target_offset = 0;
 	if (!(header = safe(0, sizeof(*header))))
 		return (errors(ERR_FILE, "missing fat header"));
-
-	//find the magic
 	if (!find_the_magic[is_64](endian_4(header->nfat_arch), \
 		sizeof(*header), &target_offset, &magic))
 		return (errors(ERR_THROW, __func__));
-
-	//do the mach-o parsing magic
 	if (!target_offset)
 		return (errors(ERR_FILE, "no known architectures found"));
 	set_start_offset(target_offset);
@@ -110,17 +97,12 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 	uint32_t	*magic;
 	bool		return_value;
 
-	//map file
 	if (!read_file(filename))
 		return (errors(ERR_THROW, __func__));
 	if (!(magic = safe(0, sizeof(*magic))))
 		return (errors(ERR_FILE, "missing magic"));
-
-	//detect endian
 	endian_little_mode(*magic == FAT_CIGAM || *magic == FAT_CIGAM_64 || \
 		*magic == MH_CIGAM || *magic == MH_CIGAM_64 || *magic == ARCHIVE_CIGAM);
-
-	//check *magic
 	if (*magic == ARCHIVE_MAGIC || *magic == ARCHIVE_CIGAM)
 		return_value = manage_archive(func_ptr, filename);
 	else if (*magic == MH_MAGIC || *magic == MH_CIGAM)
@@ -133,8 +115,6 @@ bool			extract_macho(const char *filename, t_gatherer func_ptr)
 		return_value = manage_fat(func_ptr, true);
 	else
 		return_value = errors(ERR_FILE, "unknown file format");
-
-	//unmap file
 	if (!free_file())
 		return (errors(ERR_THROW, __func__));
 	return (return_value);

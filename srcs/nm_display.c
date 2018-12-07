@@ -6,34 +6,43 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:28:45 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 22:04:41 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 23:12:14 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #include "nm_otool.h"
 #include "nm_display.h"
 
+/*
+** ft_nm has 8 available flags
+** "-a" -- Display  all symbol table entries
+** "-g" -- Display only global (external) symbols
+** "-p" -- Don't sort; display in symbol-table order
+** "-u" -- Display only undefined symbols
+** "-U" -- Don't display undefined symbols
+** "-j" -- Just display the symbol names (no value or type)
+** "-r" -- Sort in reverse order
+** "-n" -- Sort numerically rather than alphabetically
+*/
+
 static uint8_t			flags = 0;
 
 bool					nm_set_flag(const char *av)
 {
-	uint8_t				new_flags;
+	uint8_t				i;
+	const char flags_tab[8] = {'a', 'g', 'p', 'u', 'U', 'j', 'r', 'n'};
 
-	new_flags = 0;
-	new_flags |= !ft_strncmp(av, "-a", 2) * NM_FLAG_A(NM_TOGGLE)
-		| !ft_strncmp(av, "-g", 2) * NM_FLAG_G(NM_TOGGLE)
-		| !ft_strncmp(av, "-p", 2) * NM_FLAG_P(NM_TOGGLE)
-		| !ft_strncmp(av, "-u", 2) * NM_FLAG_U(NM_TOGGLE)
-		| !ft_strncmp(av, "-U", 2) * NM_FLAG_UU(NM_TOGGLE)
-		| !ft_strncmp(av, "-j", 2) * NM_FLAG_J(NM_TOGGLE)
-		| !ft_strncmp(av, "-r", 2) * NM_FLAG_R(NM_TOGGLE)
-		| !ft_strncmp(av, "-n", 2) * NM_FLAG_N(NM_TOGGLE);
-
-	if (!new_flags)
-		return (errors(ERR_USAGE, av));
-
-	flags ^= new_flags;
-	return (true);
+	i = 0;
+	if (av[0] == '-')
+	{
+		while (i < 8)
+		{
+			if (av[1] == flags_tab[i])
+				flags ^= 1 << i;
+			return (true);
+		}
+	}
+	return (errors(ERR_USAGE, av));
 }
 
 bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
@@ -51,7 +60,35 @@ bool					nm_symbol_allocate(t_sym_sort *sorted_symbols, \
 	}
 	return (true);
 }
+/*
+** ft_nm has 8 available flags
+** "-a" -- Display  all symbol table entries
+** "-g" -- Display only global (external) symbols
+** "-p" -- Don't sort; display in symbol-table order
+** "-u" -- Display only undefined symbols
+** "-U" -- Don't display undefined symbols
+** "-j" -- Just display the symbol names (no value or type)
+** "-r" -- Sort in reverse order
+** "-n" -- Sort numerically rather than alphabetically
+**
+** 8 bools stored in the 8 bits of:
+**   uint8_t flags;
+** Usage: Boolean check
+**   if (NM_FLAG_P(flags));
+** Usage: Toggle
+**   flags ^= NM_FLAG_P(NM_TOGGLE);
+*/
 
+#define NM_FLAG_A(x)	(x & 0b1)
+#define NM_FLAG_G(x)		(x & 0b10)
+#define NM_FLAG_P(x)		(x & 0b100)
+#define NM_FLAG_U(x)		(x & 0b1000)
+#define NM_FLAG_UU(x)		(x & 0b10000)
+#define NM_FLAG_J(x)		(x & 0b100000)
+#define NM_FLAG_R(x)		(x & 0b1000000)
+#define NM_FLAG_N(x)		(x & 0b10000000)
+
+#define NM_TOGGLE			0b11111111
 void					nm_store_value(t_sym_sort *sorted_symbols, \
 							const t_symbol *new_symbol)
 {
@@ -75,11 +112,9 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 	t_symbol			*curr;
 	size_t				i;
 
-	//sort
 	if (!NM_FLAG_P(flags))
 		nm_selection_sort(sorted_symbols, \
 			(!!NM_FLAG_R(flags) + (!!NM_FLAG_N(flags)) * 2));
-	//print
 	i = 0;
 	while (i < sorted_symbols->nsyms_sort)
 	{
@@ -94,7 +129,6 @@ void					nm_sort_print_free(t_sym_sort *sorted_symbols, \
 				curr->str_max_size, curr->string);
 		i++;
 	}
-	//free
 	free(sorted_symbols->symbols);
 	free(sorted_symbols->symbols_sort);
 }

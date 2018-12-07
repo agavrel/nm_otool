@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/08 22:06:13 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 21:00:25 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 23:12:57 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -16,7 +16,7 @@
 ** for sorted archive, which is the default case
 */
 
-static bool     loop_archive_sorted(t_archive_header *header, \
+static bool		loop_archive_sorted(t_archive_header *header, \
 					t_archive_symtab *symtab_array)
 {
 	const uint32_t		base_offset = sizeof(*header) - sizeof(uint32_t);
@@ -43,7 +43,7 @@ static bool     loop_archive_sorted(t_archive_header *header, \
 	return (true);
 }
 
-static bool     parse_object_header(t_gatherer func_ptr, uint32_t offset, \
+static bool		parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 					const char *filename, bool is_little_endian)
 {
 	t_object_header		*obj_header;
@@ -54,16 +54,12 @@ static bool     parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 	if (!(obj_header = safe(offset, sizeof(*obj_header))))
 		return (errors(ERR_FILE, "bad object header offset"));
 	offset += sizeof(*obj_header) - 20;
-
 	ft_bzero(name_length_buf, 16);
 	ft_strncpy(name_length_buf, obj_header->name + 3, 13);
 	name_length = ft_atoi(name_length_buf);
-
 	ft_printf("\n%s(%.*s):\n", filename, name_length, \
 		safe(offset, name_length));
-
 	offset += name_length;
-
 	if (!(magic = safe(offset, sizeof(*magic))))
 		return (errors(ERR_FILE, "bad object magic offset"));
 	endian_little_mode(*magic == MH_CIGAM_64 || *magic == MH_CIGAM);
@@ -78,7 +74,7 @@ static bool     parse_object_header(t_gatherer func_ptr, uint32_t offset, \
 ** archive manager: calls a t_gatherer for each object found
 */
 
-bool            manage_archive(t_gatherer func_ptr, const char *filename)
+bool			manage_archive(t_gatherer func_ptr, const char *filename)
 {
 	t_archive_header	*header;
 	t_archive_symtab	*symtab_arr;

@@ -6,42 +6,12 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/12 17:30:54 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 20:53:53 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 23:08:29 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
 #ifndef NM_DISPLAY_H
 # define NM_DISPLAY_H
-
-/*
-** ft_nm has 8 available flags
-** "-a" -- Display  all symbol table entries
-** "-g" -- Display only global (external) symbols
-** "-p" -- Don't sort; display in symbol-table order
-** "-u" -- Display only undefined symbols
-** "-U" -- Don't display undefined symbols
-** "-j" -- Just display the symbol names (no value or type)
-** "-r" -- Sort in reverse order
-** "-n" -- Sort numerically rather than alphabetically
-**
-** 8 bools stored in the 8 bits of:
-**   uint8_t flags;
-** Usage: Boolean check
-**   if (NM_FLAG_P(flags));
-** Usage: Toggle
-**   flags ^= NM_FLAG_P(NM_TOGGLE);
-*/
-
-#define NM_FLAG_A(x)		(x & 0b1)
-#define NM_FLAG_G(x)		(x & 0b10)
-#define NM_FLAG_P(x)		(x & 0b100)
-#define NM_FLAG_U(x)		(x & 0b1000)
-#define NM_FLAG_UU(x)		(x & 0b10000)
-#define NM_FLAG_J(x)		(x & 0b100000)
-#define NM_FLAG_R(x)		(x & 0b1000000)
-#define NM_FLAG_N(x)		(x & 0b10000000)
-
-#define NM_TOGGLE			0b11111111
 
 /*
 ** struct s_symbol:

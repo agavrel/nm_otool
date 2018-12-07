@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:02:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 21:29:23 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 22:59:18 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -25,20 +25,15 @@ static bool		manage_symtab_32(const size_t offset)
 	uint32_t				nsyms;
 	uint32_t				i;
 
-	//retrieve pointers
 	if (!(sym = safe(offset, sizeof(*sym))))
 		return (errors(ERR_FILE, "bad symtab command offset"));
 	nsyms = endian_4(sym->nsyms);
 	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
 		return (errors(ERR_FILE, "bad symbol table offset or size"));
-	// check if stringtable was invalid to begin with
 	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
-	// allocate memory for sorted_symbols
 	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
 		return (errors(ERR_THROW, __func__));
-
-	//for each symbol
 	i = 0;
 	while (i < nsyms)
 	{
@@ -64,14 +59,10 @@ static bool		manage_symtab_64(const size_t offset)
 	nsyms = endian_4(sym->nsyms);
 	if (!(nlist = safe(endian_4(sym->symoff), sizeof(*nlist) * nsyms)))
 		return (errors(ERR_FILE, "bad symbol table offset or size"));
-	// check if stringtable was invalid to begin with
 	if (!safe(endian_4(sym->stroff), endian_4(sym->strsize)))
 		return (errors(ERR_FILE, "bad stringtable offset or size"));
-	// allocate memory for sorted_symbols
 	if (!(nm_symbol_allocate(&sorted_symbols, nsyms)))
 		return (errors(ERR_THROW, __func__));
-
-	//for each symbol
 	i = 0;
 	while (i < nsyms)
 	{

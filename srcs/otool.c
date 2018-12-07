@@ -6,7 +6,7 @@
 /*   By: angavrel <angavrel@student.42.fr>          +#+  +:+       +#+        */
 /*                                                +#+#+#+#+#+   +#+           */
 /*   Created: 2018/05/10 02:09:18 by angavrel          #+#    #+#             */
-/*   Updated: 2018/05/13 21:25:48 by angavrel         ###   ########.fr       */
+/*   Updated: 2018/12/07 22:52:39 by angavrel         ###   ########.fr       */
 /*                                                                            */
 /* ************************************************************************** */
 
@@ -43,7 +43,6 @@ static bool		print_section(const size_t offset)
 		return (errors(ERR_FILE, "bad section offset"));
 	if (!(text = safe(endian_4(sect->offset), endian_4(sect->size))))
 		return (errors(ERR_FILE, "bad text offset"));
-
 	hexdump_text(text, endian_4(sect->addr), endian_4(sect->size));
 	return (true);
 }
@@ -57,7 +56,6 @@ static bool		print_section_64(const size_t offset)
 		return (errors(ERR_FILE, "bad section offset"));
 	if (!(text = safe(endian_4(sect->offset), endian_8(sect->size))))
 		return (errors(ERR_FILE, "bad text offset"));
-
 	hexdump_text(text, endian_8(sect->addr), endian_8(sect->size));
 	return (true);
 }
