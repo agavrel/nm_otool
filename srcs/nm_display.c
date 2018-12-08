@@ -40,6 +40,7 @@ bool					nm_set_flag(const char *av)
 			if (av[1] == flags_tab[i])
 				flags ^= 1 << i;
 			return (true);
+			
 		}
 	}
 	return (errors(ERR_USAGE, av));
